@@ -1,23 +1,20 @@
-import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useTheme } from "@/contexts/ThemeContext";
 import {
   GraduationCap, LayoutDashboard, BookOpen, Users, CalendarDays,
   ClipboardList, FileText, Building2, MessageSquare, Settings,
-  ChevronRight, Moon, Sun, Search, Bell, LogOut, Menu, X
+  ChevronRight, X
 } from "lucide-react";
 
 const sidebarItems = [
-  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard", active: true },
-  { icon: BookOpen, label: "Cursos", path: "/dashboard" },
-  { icon: Users, label: "Estudiantes", path: "/dashboard" },
-  { icon: CalendarDays, label: "Sesiones en Vivo", path: "/dashboard" },
-  { icon: ClipboardList, label: "Evaluaciones", path: "/dashboard" },
-  { icon: FileText, label: "Reportes", path: "/dashboard" },
-  { icon: Building2, label: "Instituciones", path: "/dashboard" },
-  { icon: MessageSquare, label: "Comunidad", path: "/dashboard" },
-  { icon: Settings, label: "Configuración", path: "/dashboard" },
+  { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
+  { icon: BookOpen, label: "Cursos", path: "/courses" },
+  { icon: Users, label: "Estudiantes", path: "/students" },
+  { icon: CalendarDays, label: "Sesiones en Vivo", path: "/live-sessions" },
+  { icon: ClipboardList, label: "Evaluaciones", path: "/assessments" },
+  { icon: FileText, label: "Reportes", path: "/reports" },
+  { icon: Building2, label: "Instituciones", path: "/institutions" },
+  { icon: MessageSquare, label: "Comunidad", path: "/community" },
+  { icon: Settings, label: "Configuración", path: "/settings" },
 ];
 
 const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
@@ -25,7 +22,6 @@ const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => voi
 
   return (
     <>
-      {/* Mobile overlay */}
       {open && (
         <div className="fixed inset-0 bg-foreground/20 z-40 lg:hidden" onClick={onClose} />
       )}
@@ -45,7 +41,7 @@ const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => voi
         </div>
         <nav className="px-3 py-4 space-y-1">
           {sidebarItems.map((item) => {
-            const isActive = item.active;
+            const isActive = location.pathname === item.path;
             return (
               <Link
                 key={item.label}
@@ -57,7 +53,7 @@ const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => voi
                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
                 }`}
               >
-                <item.icon className="w-4.5 h-4.5 shrink-0" />
+                <item.icon className="w-[18px] h-[18px] shrink-0" />
                 <span className="flex-1">{item.label}</span>
                 {!isActive && <ChevronRight className="w-3.5 h-3.5 opacity-40" />}
               </Link>
