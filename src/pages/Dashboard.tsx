@@ -1,14 +1,14 @@
 import { useAuth } from "@/contexts/AuthContext";
 import DashboardLayout from "@/components/DashboardLayout";
 import StatsCard from "@/components/StatsCard";
+import { mockInstitutions, mockCourseSections, mockUsers, mockSubmissions, mockLiveSessions, getInstitutionStats } from "@/data/mockStore";
+import { ROLE_LABELS } from "@/types/dcampus";
 import {
-  BookOpen, Users, Video, Award, DollarSign, UserCheck,
-  ChevronLeft, ChevronRight
+  BookOpen, Users, Video, Award, GraduationCap, UserCheck,
+  ChevronLeft, ChevronRight, Building2, Upload, BarChart3
 } from "lucide-react";
 import { motion } from "framer-motion";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const chartData = [
   { month: "Ene", matriculas: 45, completados: 30 },
@@ -17,12 +17,6 @@ const chartData = [
   { month: "Abr", matriculas: 50, completados: 35 },
   { month: "May", matriculas: 70, completados: 60 },
   { month: "Jun", matriculas: 55, completados: 38 },
-  { month: "Jul", matriculas: 90, completados: 65 },
-  { month: "Ago", matriculas: 75, completados: 50 },
-  { month: "Sep", matriculas: 60, completados: 45 },
-  { month: "Oct", matriculas: 85, completados: 70 },
-  { month: "Nov", matriculas: 70, completados: 55 },
-  { month: "Dic", matriculas: 95, completados: 72 },
 ];
 
 const generateCalendar = () => {
@@ -47,6 +41,16 @@ const Dashboard = () => {
   const today = new Date();
   const calendarDays = generateCalendar();
 
+  const isSuperAdmin = user?.role === "superadmin";
+  const userInstitution = user?.institutionId ? mockInstitutions.find((i) => i.id === user.institutionId) : null;
+  const stats = user?.institutionId ? getInstitutionStats(user.institutionId) : null;
+
+  const totalStudents = isSuperAdmin ? mockUsers.filter((u) => u.role === "student").length : (stats?.studentsCount || 0);
+  const totalSections = isSuperAdmin ? mockCourseSections.length : (stats?.sectionsCount || 0);
+  const totalTeachers = isSuperAdmin ? mockUsers.filter((u) => u.role === "teacher").length : (stats?.teachersCount || 0);
+  const liveSessions = mockLiveSessions.filter((s) => s.status === "live" || s.status === "scheduled").length;
+  const pendingSubmissions = mockSubmissions.filter((s) => !s.grade).length;
+
   return (
     <DashboardLayout title="Dashboard">
       <div className="space-y-6">
@@ -57,22 +61,31 @@ const Dashboard = () => {
               <span className="text-2xl font-display font-bold text-primary">{user?.name?.charAt(0) || "U"}</span>
             </div>
             <div>
-              <p className="text-sm text-primary font-semibold">Disponible hoy</p>
-              <p className="text-xs text-muted-foreground">Desde: Instituto D'Campus</p>
-              <p className="text-lg font-display font-bold text-foreground mt-1">{user?.name || "Usuario"}</p>
-              <p className="text-xs text-muted-foreground capitalize">{user?.role || "Admin"}</p>
+              <p className="text-lg font-display font-bold text-foreground">{user?.name || "Usuario"}</p>
+              <p className="text-sm text-primary font-medium">{user?.role ? ROLE_LABELS[user.role] : "Usuario"}</p>
+              {userInstitution && (
+                <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                  <Building2 className="w-3 h-3" /> {userInstitution.name}
+                </p>
+              )}
+              {isSuperAdmin && <p className="text-xs text-muted-foreground mt-1">Gestionando {mockInstitutions.length} instituciones</p>}
             </div>
           </div>
         </motion.div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatsCard value={40} label="Cursos" subtitle="Ayer: 32 cursos" icon={<BookOpen className="w-5 h-5 text-primary" />} />
-          <StatsCard value={21} label="Nuevas Matrículas" subtitle="Ayer: 18 matrículas" icon={<UserCheck className="w-5 h-5 text-primary" />} />
-          <StatsCard value={14} label="Sesiones en Vivo" subtitle="Ayer: 9 sesiones" icon={<Video className="w-5 h-5 text-primary" />} />
-          <StatsCard value={15} label="Profesores" subtitle="Disponibles hoy" icon={<Users className="w-5 h-5 text-primary" />} />
-          <StatsCard value={36} label="Evaluaciones" subtitle="Pendientes de calificar" icon={<Award className="w-5 h-5 text-primary" />} />
-          <StatsCard value="$52,140" label="Ingresos" subtitle="Ayer: $41,876" icon={<DollarSign className="w-5 h-5 text-primary" />} />
+          {isSuperAdmin && (
+            <StatsCard value={mockInstitutions.length} label="Instituciones" subtitle="Activas en la plataforma" icon={<Building2 className="w-5 h-5 text-primary" />} />
+          )}
+          <StatsCard value={totalSections} label="Secciones Activas" subtitle="Este período" icon={<BookOpen className="w-5 h-5 text-primary" />} />
+          <StatsCard value={totalStudents} label="Estudiantes" subtitle="Matriculados" icon={<Users className="w-5 h-5 text-primary" />} />
+          <StatsCard value={totalTeachers} label="Profesores" subtitle="Activos" icon={<UserCheck className="w-5 h-5 text-primary" />} />
+          <StatsCard value={liveSessions} label="Sesiones" subtitle="Programadas/En vivo" icon={<Video className="w-5 h-5 text-primary" />} />
+          <StatsCard value={pendingSubmissions} label="Entregas Pendientes" subtitle="Sin calificar" icon={<Upload className="w-5 h-5 text-primary" />} />
+          {stats && (
+            <StatsCard value={`${stats.submissionRate}%`} label="Tasa de Calificación" subtitle="Entregas calificadas" icon={<BarChart3 className="w-5 h-5 text-primary" />} />
+          )}
         </div>
 
         {/* Chart + Calendar */}
@@ -113,14 +126,9 @@ const Dashboard = () => {
                 <div key={d} className="py-1.5 font-semibold text-muted-foreground">{d}</div>
               ))}
               {calendarDays.map((d, i) => (
-                <div
-                  key={i}
-                  className={`py-1.5 rounded-md text-xs transition-colors ${
-                    d.today ? "bg-primary text-primary-foreground font-bold" : d.current ? "text-foreground hover:bg-muted cursor-pointer" : "text-muted-foreground/40"
-                  }`}
-                >
-                  {d.day}
-                </div>
+                <div key={i} className={`py-1.5 rounded-md text-xs transition-colors ${
+                  d.today ? "bg-primary text-primary-foreground font-bold" : d.current ? "text-foreground hover:bg-muted cursor-pointer" : "text-muted-foreground/40"
+                }`}>{d.day}</div>
               ))}
             </div>
           </div>

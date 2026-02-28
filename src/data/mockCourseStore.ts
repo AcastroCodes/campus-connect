@@ -40,14 +40,14 @@ export const mockCourses: Course[] = [
       {
         id: "m1", title: "Fundamentos HTML/CSS", sortOrder: 1,
         lessons: [
-          { id: "l1", title: "Introducción a HTML5", contentText: "Contenido de la lección...", videoProvider: "youtube", videoId: "dQw4w9WgXcQ", isFree: true, sortOrder: 1 },
-          { id: "l2", title: "CSS Flexbox y Grid", contentText: "Aprende layout moderno...", videoProvider: "youtube", videoId: "abc123", isFree: false, sortOrder: 2 },
+          { id: "l1", title: "Introducción a HTML5", contentText: "Contenido de la lección...", videoProvider: "youtube", videoId: "dQw4w9WgXcQ", isFree: true, sortOrder: 1, resources: [] },
+          { id: "l2", title: "CSS Flexbox y Grid", contentText: "Aprende layout moderno...", videoProvider: "youtube", videoId: "abc123", isFree: false, sortOrder: 2, resources: [] },
         ],
       },
       {
         id: "m2", title: "JavaScript Moderno", sortOrder: 2,
         lessons: [
-          { id: "l3", title: "ES6+ Features", contentText: "Arrow functions, destructuring...", videoProvider: "vimeo", videoId: "123456", isFree: false, sortOrder: 1 },
+          { id: "l3", title: "ES6+ Features", contentText: "Arrow functions, destructuring...", videoProvider: "vimeo", videoId: "123456", isFree: false, sortOrder: 1, resources: [] },
         ],
       },
     ],
@@ -90,7 +90,7 @@ export const mockCourses: Course[] = [
       {
         id: "m3", title: "Principios de UX", sortOrder: 1,
         lessons: [
-          { id: "l4", title: "Investigación de usuarios", contentText: "", videoProvider: "none", videoId: "", isFree: true, sortOrder: 1 },
+          { id: "l4", title: "Investigación de usuarios", contentText: "", videoProvider: "none", videoId: "", isFree: true, sortOrder: 1, resources: [] },
         ],
       },
     ],

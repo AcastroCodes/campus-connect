@@ -1,24 +1,38 @@
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   GraduationCap, LayoutDashboard, BookOpen, Users, CalendarDays,
   ClipboardList, FileText, Building2, MessageSquare, Settings,
-  ChevronRight, X
+  ChevronRight, X, Upload, BarChart3
 } from "lucide-react";
 
-const sidebarItems = [
+type NavItem = {
+  icon: React.ElementType;
+  label: string;
+  path: string;
+  roles?: string[];
+};
+
+const allSidebarItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: BookOpen, label: "Cursos", path: "/courses" },
-  { icon: Users, label: "Estudiantes", path: "/students" },
-  { icon: CalendarDays, label: "Sesiones en Vivo", path: "/live-sessions" },
-  { icon: ClipboardList, label: "Evaluaciones", path: "/assessments" },
-  { icon: FileText, label: "Reportes", path: "/reports" },
-  { icon: Building2, label: "Instituciones", path: "/institutions" },
+  { icon: Building2, label: "Instituciones", path: "/institutions", roles: ["superadmin"] },
+  { icon: BookOpen, label: "Cursos", path: "/courses", roles: ["admin", "teacher", "coordinator"] },
+  { icon: Users, label: "Estudiantes", path: "/students", roles: ["admin", "teacher", "coordinator"] },
+  { icon: CalendarDays, label: "Sesiones en Vivo", path: "/live-sessions", roles: ["admin", "teacher", "coordinator", "student"] },
+  { icon: ClipboardList, label: "Evaluaciones", path: "/assessments", roles: ["admin", "teacher", "coordinator"] },
+  { icon: Upload, label: "Entregas", path: "/submissions", roles: ["teacher", "coordinator", "student"] },
+  { icon: BarChart3, label: "Cohorte de Notas", path: "/gradebook", roles: ["admin", "teacher", "coordinator"] },
+  { icon: FileText, label: "Reportes", path: "/reports", roles: ["superadmin", "admin", "coordinator"] },
   { icon: MessageSquare, label: "Comunidad", path: "/community" },
   { icon: Settings, label: "Configuración", path: "/settings" },
 ];
 
 const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
   const location = useLocation();
+  const { user } = useAuth();
+  const userRole = user?.role || "student";
+
+  const sidebarItems = allSidebarItems.filter((item) => !item.roles || item.roles.includes(userRole));
 
   return (
     <>
@@ -39,9 +53,17 @@ const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => voi
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Role badge */}
+        <div className="px-5 py-3 border-b border-sidebar-border">
+          <span className="text-xs px-2 py-0.5 rounded-full bg-sidebar-accent text-sidebar-accent-foreground font-medium capitalize">
+            {userRole}
+          </span>
+        </div>
+
         <nav className="px-3 py-4 space-y-1">
           {sidebarItems.map((item) => {
-            const isActive = location.pathname === item.path;
+            const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + "/");
             return (
               <Link
                 key={item.label}
