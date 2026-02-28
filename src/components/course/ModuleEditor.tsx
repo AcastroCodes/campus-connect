@@ -47,6 +47,7 @@ const ModuleEditor = ({ modules, onChange }: Props) => {
       videoId: "",
       isFree: false,
       sortOrder: 0,
+      resources: [],
     };
     onChange(
       modules.map((m) =>

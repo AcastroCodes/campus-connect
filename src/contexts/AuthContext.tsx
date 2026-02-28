@@ -1,11 +1,13 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
+
+export type UserRole = "superadmin" | "admin" | "coordinator" | "teacher" | "student";
 
 interface User {
   id: string;
   name: string;
   email: string;
-  role: "superadmin" | "admin" | "teacher" | "student";
+  role: UserRole;
+  institutionId?: string;
   avatar?: string;
 }
 
@@ -19,24 +21,11 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const MOCK_USERS: Record<string, User> = {
-  "admin@dcampus.com": {
-    id: "1",
-    name: "Dr. Mónica García",
-    email: "admin@dcampus.com",
-    role: "admin",
-  },
-  "teacher@dcampus.com": {
-    id: "2",
-    name: "Prof. Carlos López",
-    email: "teacher@dcampus.com",
-    role: "teacher",
-  },
-  "student@dcampus.com": {
-    id: "3",
-    name: "Ana Martínez",
-    email: "student@dcampus.com",
-    role: "student",
-  },
+  "super@dcampus.com": { id: "u0", name: "Super Admin", email: "super@dcampus.com", role: "superadmin" },
+  "admin@dcampus.com": { id: "u1", name: "Dr. Mónica García", email: "admin@dcampus.com", role: "admin", institutionId: "inst1" },
+  "teacher@dcampus.com": { id: "u2", name: "Prof. Carlos López", email: "teacher@dcampus.com", role: "teacher", institutionId: "inst1" },
+  "coord@dcampus.com": { id: "u6", name: "Coord. Laura Vega", email: "coord@dcampus.com", role: "coordinator", institutionId: "inst1" },
+  "student@dcampus.com": { id: "u3", name: "Ana Martínez", email: "student@dcampus.com", role: "student", institutionId: "inst1" },
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -52,13 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem("dcampus-user", JSON.stringify(mockUser));
       return true;
     }
-    // Accept any email/password for demo
-    const newUser: User = {
-      id: "99",
-      name: email.split("@")[0],
-      email,
-      role: "student",
-    };
+    const newUser: User = { id: "99", name: email.split("@")[0], email, role: "student", institutionId: "inst1" };
     setUser(newUser);
     localStorage.setItem("dcampus-user", JSON.stringify(newUser));
     return true;

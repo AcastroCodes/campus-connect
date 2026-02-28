@@ -14,9 +14,12 @@ import LiveSessions from "./pages/LiveSessions";
 import Assessments from "./pages/Assessments";
 import Reports from "./pages/Reports";
 import Institutions from "./pages/Institutions";
+import InstitutionDetail from "./pages/InstitutionDetail";
 import Community from "./pages/Community";
 import SettingsPage from "./pages/Settings";
 import CourseBuilder from "./pages/CourseBuilder";
+import Gradebook from "./pages/Gradebook";
+import Submissions from "./pages/Submissions";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,8 +44,11 @@ const AppRoutes = () => (
     <Route path="/students" element={<P><Students /></P>} />
     <Route path="/live-sessions" element={<P><LiveSessions /></P>} />
     <Route path="/assessments" element={<P><Assessments /></P>} />
+    <Route path="/submissions" element={<P><Submissions /></P>} />
+    <Route path="/gradebook" element={<P><Gradebook /></P>} />
     <Route path="/reports" element={<P><Reports /></P>} />
     <Route path="/institutions" element={<P><Institutions /></P>} />
+    <Route path="/institutions/:id" element={<P><InstitutionDetail /></P>} />
     <Route path="/community" element={<P><Community /></P>} />
     <Route path="/settings" element={<P><SettingsPage /></P>} />
     <Route path="*" element={<NotFound />} />
