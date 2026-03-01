@@ -20,6 +20,7 @@ import SettingsPage from "./pages/Settings";
 import CourseBuilder from "./pages/CourseBuilder";
 import Gradebook from "./pages/Gradebook";
 import Submissions from "./pages/Submissions";
+import CurriculumPage from "./pages/CurriculumPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const AppRoutes = () => (
     <Route path="/courses" element={<P><Courses /></P>} />
     <Route path="/courses/new" element={<P><CourseBuilder /></P>} />
     <Route path="/courses/:id/edit" element={<P><CourseBuilder /></P>} />
+    <Route path="/curriculum" element={<P><CurriculumPage /></P>} />
     <Route path="/students" element={<P><Students /></P>} />
     <Route path="/live-sessions" element={<P><LiveSessions /></P>} />
     <Route path="/assessments" element={<P><Assessments /></P>} />

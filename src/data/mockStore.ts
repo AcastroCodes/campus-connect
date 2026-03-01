@@ -1,7 +1,8 @@
 import {
   Institution, Career, Subject, CourseSection, UserProfile, Enrollment,
   Submission, Grade, LiveSession, Attendance, EvaluationPlan, Module,
-  InstitutionConfig, AcademicPeriod, Lesson,
+  InstitutionConfig, AcademicPeriod, Lesson, Curriculum, CurriculumEntry,
+  BaseEvaluationPlan,
 } from "@/types/dcampus";
 
 const gid = () => Math.random().toString(36).substr(2, 9);
@@ -72,6 +73,59 @@ export const mockSubjects: Subject[] = [
   { id: "sub6", careerId: "car2", institutionId: "inst1", name: "Motion Graphics", code: "DGD-302", credits: 3, semester: 3, isActive: true },
   { id: "sub7", careerId: "car4", institutionId: "inst2", name: "Machine Learning", code: "CD-201", credits: 4, semester: 2, isActive: true },
   { id: "sub8", careerId: "car4", institutionId: "inst2", name: "Visualización de Datos", code: "CD-202", credits: 3, semester: 2, isActive: true },
+];
+
+// ========== Curriculum (Pensum) ==========
+
+export const mockCurriculums: Curriculum[] = [
+  {
+    id: "cur1", careerId: "car1", institutionId: "inst1", name: "Pensum 2026", year: 2026, isActive: true,
+    entries: [
+      { id: "ce1", careerId: "car1", subjectId: "sub1", semester: 4, isRequired: true, prerequisites: [] },
+      { id: "ce2", careerId: "car1", subjectId: "sub2", semester: 4, isRequired: true, prerequisites: [] },
+      { id: "ce3", careerId: "car1", subjectId: "sub3", semester: 5, isRequired: true, prerequisites: ["sub1"] },
+      { id: "ce4", careerId: "car1", subjectId: "sub4", semester: 5, isRequired: false, prerequisites: ["sub2"] },
+    ],
+  },
+  {
+    id: "cur2", careerId: "car2", institutionId: "inst1", name: "Pensum 2026", year: 2026, isActive: true,
+    entries: [
+      { id: "ce5", careerId: "car2", subjectId: "sub5", semester: 3, isRequired: true, prerequisites: [] },
+      { id: "ce6", careerId: "car2", subjectId: "sub6", semester: 3, isRequired: true, prerequisites: [] },
+    ],
+  },
+  {
+    id: "cur3", careerId: "car4", institutionId: "inst2", name: "Pensum 2026", year: 2026, isActive: true,
+    entries: [
+      { id: "ce7", careerId: "car4", subjectId: "sub7", semester: 2, isRequired: true, prerequisites: [] },
+      { id: "ce8", careerId: "car4", subjectId: "sub8", semester: 2, isRequired: true, prerequisites: [] },
+    ],
+  },
+];
+
+// ========== Base Evaluation Plans ==========
+
+export const mockBaseEvaluationPlans: BaseEvaluationPlan[] = [
+  {
+    id: "bep1", subjectId: "sub1", institutionId: "inst1", name: "Plan Base - Desarrollo Web",
+    totalWeight: 100, createdBy: "u0",
+    items: [
+      { id: "bei1", type: "tarea", title: "Tareas Prácticas", description: "Entregas de código funcional", weight: 25 },
+      { id: "bei2", type: "examen", title: "Exámenes Parciales", description: "Evaluación teórica-práctica", weight: 35 },
+      { id: "bei3", type: "participacion", title: "Participación", description: "Asistencia y participación activa", weight: 10 },
+      { id: "bei4", type: "proyecto", title: "Proyecto Final", description: "Aplicación funcional completa", weight: 30 },
+    ],
+  },
+  {
+    id: "bep2", subjectId: "sub5", institutionId: "inst1", name: "Plan Base - UX/UI",
+    totalWeight: 100, createdBy: "u0",
+    items: [
+      { id: "bei5", type: "tarea", title: "Wireframes y Prototipos", description: "Entregas de diseño", weight: 30 },
+      { id: "bei6", type: "examen", title: "Evaluación Teórica", description: "Principios de diseño", weight: 20 },
+      { id: "bei7", type: "participacion", title: "Participación", description: "Críticas de diseño en clase", weight: 15 },
+      { id: "bei8", type: "proyecto", title: "Proyecto Rediseño App", description: "Case study completo", weight: 35 },
+    ],
+  },
 ];
 
 // ========== Users ==========
@@ -145,13 +199,13 @@ export const mockCourseSections: CourseSection[] = [
     teacherId: "u2", teacherName: "Prof. Carlos López", accentColor: "#2E9B63",
     welcomeMessage: "Bienvenido al curso de Desarrollo Web Full Stack",
     status: "active", modules: sampleModules, evaluationPlans: sampleEvalPlans,
-    enrollmentsCount: 45, year: 2026,
+    enrollmentsCount: 45, year: 2026, baseEvaluationPlanId: "bep1",
   },
   {
     id: "cs2", subjectId: "sub5", institutionId: "inst1", periodId: "p1", periodName: "Trimestre 1",
     teacherId: "u5", teacherName: "Dra. Ana Ríos", accentColor: "#3B82F6",
     welcomeMessage: "", status: "active", modules: [{ id: "m3", title: "Principios de UX", sortOrder: 1, lessons: [{ id: "l4", title: "Investigación de usuarios", contentText: "", videoProvider: "none", videoId: "", isFree: true, sortOrder: 1, resources: [] }] }],
-    evaluationPlans: createEvalPlans(trimesterConfig.periods), enrollmentsCount: 32, year: 2026,
+    evaluationPlans: createEvalPlans(trimesterConfig.periods), enrollmentsCount: 32, year: 2026, baseEvaluationPlanId: "bep2",
   },
   {
     id: "cs3", subjectId: "sub7", institutionId: "inst2", periodId: "s1", periodName: "Semestre 1",
@@ -213,14 +267,13 @@ export const mockAttendance: Attendance[] = [
   { id: "a5", liveSessionId: "ls1", studentId: "s5", studentName: "Carlos Ruiz", status: "absent" },
 ];
 
-// ========== Helper: backward-compat mock courses ==========
+// ========== Helpers ==========
 
 export { trimesterConfig as institutionConfig };
 
 export const createEmptyEvaluationPlans = (periods: AcademicPeriod[]): EvaluationPlan[] =>
   periods.map((p) => ({ id: gid(), periodId: p.id, periodName: p.name, items: [], totalWeight: 0 }));
 
-// Stats helpers
 export const getInstitutionStats = (instId: string) => {
   const careers = mockCareers.filter((c) => c.institutionId === instId);
   const subjects = mockSubjects.filter((s) => s.institutionId === instId);
