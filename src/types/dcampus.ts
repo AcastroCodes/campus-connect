@@ -43,6 +43,29 @@ export interface Career {
   studentsCount: number;
 }
 
+// ========== Curriculum (Pensum) ==========
+
+export interface CurriculumEntry {
+  id: string;
+  careerId: string;
+  subjectId: string;
+  semester: number; // semester/order in the career plan
+  isRequired: boolean;
+  prerequisites: string[]; // array of subjectIds
+}
+
+export interface Curriculum {
+  id: string;
+  careerId: string;
+  institutionId: string;
+  name: string; // e.g. "Pensum 2026"
+  year: number;
+  isActive: boolean;
+  entries: CurriculumEntry[];
+}
+
+// ========== Subject ==========
+
 export interface Subject {
   id: string;
   careerId: string;
@@ -53,6 +76,28 @@ export interface Subject {
   semester: number; // suggested semester in the career plan
   isActive: boolean;
 }
+
+// ========== Base Evaluation Plan ==========
+
+export interface BaseEvaluationPlan {
+  id: string;
+  subjectId: string;
+  institutionId: string;
+  name: string;
+  items: BaseEvaluationItem[];
+  totalWeight: number;
+  createdBy: string; // userId (superadmin or admin)
+}
+
+export interface BaseEvaluationItem {
+  id: string;
+  type: EvaluationItemType;
+  title: string;
+  description: string;
+  weight: number;
+}
+
+// ========== Course Section (Active Plan) ==========
 
 export interface CourseSection {
   id: string;
@@ -69,6 +114,7 @@ export interface CourseSection {
   evaluationPlans: EvaluationPlan[];
   enrollmentsCount: number;
   year: number;
+  baseEvaluationPlanId?: string; // reference to the base plan used
 }
 
 // ========== User & Enrollment ==========
@@ -171,7 +217,7 @@ export interface Grade {
   periodId: string;
   evaluationItemId: string;
   evaluationItemTitle: string;
-  score: number; // 0-100
+  score: number;
   maxScore: number;
   weight: number;
 }
@@ -238,8 +284,8 @@ export const PERIOD_TYPE_LABELS: Record<PeriodType, string> = {
 
 export const ROLE_LABELS: Record<UserRole, string> = {
   superadmin: "Super Administrador",
-  admin: "Administrador",
-  coordinator: "Coordinador",
+  admin: "Director",
+  coordinator: "Control de Estudio",
   teacher: "Profesor",
   student: "Estudiante",
 };

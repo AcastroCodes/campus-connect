@@ -2,11 +2,19 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "@/contexts/ThemeContext";
-import { GraduationCap, Moon, Sun, Eye, EyeOff } from "lucide-react";
+import { GraduationCap, Moon, Sun, Eye, EyeOff, Shield, Building2, UserCheck, BookOpen, Users } from "lucide-react";
 import { motion } from "framer-motion";
 
+const DEMO_ACCOUNTS = [
+  { email: "super@dcampus.com", role: "SuperAdmin", icon: Shield, color: "hsl(var(--destructive))" },
+  { email: "admin@dcampus.com", role: "Director", icon: Building2, color: "hsl(var(--primary))" },
+  { email: "coord@dcampus.com", role: "Control de Estudio", icon: UserCheck, color: "hsl(var(--chart-4))" },
+  { email: "teacher@dcampus.com", role: "Profesor", icon: BookOpen, color: "hsl(var(--chart-3))" },
+  { email: "student@dcampus.com", role: "Estudiante", icon: Users, color: "hsl(var(--accent))" },
+];
+
 const Login = () => {
-  const [email, setEmail] = useState("admin@dcampus.com");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("password");
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -33,6 +41,20 @@ const Login = () => {
     }
   };
 
+  const handleDemoLogin = async (demoEmail: string) => {
+    setEmail(demoEmail);
+    setLoading(true);
+    setError("");
+    try {
+      const success = await login(demoEmail, "password");
+      if (success) navigate("/dashboard");
+    } catch {
+      setError("Error al iniciar sesión");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background flex">
       {/* Left - Branding */}
@@ -48,9 +70,26 @@ const Login = () => {
           <h2 className="text-3xl font-display font-bold text-primary-foreground mb-4">
             Bienvenido a D'Campus
           </h2>
-          <p className="text-primary-foreground/70 text-lg">
-            Tu plataforma educativa multi-tenant con Zero-Load Architecture
+          <p className="text-primary-foreground/70 text-lg mb-8">
+            Gestión académica integral multi-instituto
           </p>
+          {/* Demo role cards */}
+          <div className="space-y-2 max-w-xs mx-auto">
+            <p className="text-primary-foreground/50 text-xs font-medium uppercase tracking-wider mb-3">Acceso rápido demo</p>
+            {DEMO_ACCOUNTS.map((demo) => (
+              <button
+                key={demo.email}
+                onClick={() => handleDemoLogin(demo.email)}
+                className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg bg-primary-foreground/10 hover:bg-primary-foreground/20 transition-colors text-left"
+              >
+                <demo.icon className="w-4 h-4 text-primary-foreground/80 shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium text-primary-foreground">{demo.role}</p>
+                  <p className="text-xs text-primary-foreground/50 truncate">{demo.email}</p>
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -128,9 +167,21 @@ const Login = () => {
             </button>
           </form>
 
-          <div className="mt-6 p-4 rounded-lg bg-muted">
-            <p className="text-xs text-muted-foreground mb-2 font-medium">Demo: usa cualquier email/contraseña</p>
-            <p className="text-xs text-muted-foreground">Prueba: <span className="font-mono text-foreground">admin@dcampus.com</span></p>
+          {/* Mobile demo cards */}
+          <div className="mt-6 lg:hidden">
+            <p className="text-xs text-muted-foreground font-medium mb-3">Acceso rápido demo:</p>
+            <div className="grid grid-cols-2 gap-2">
+              {DEMO_ACCOUNTS.map((demo) => (
+                <button
+                  key={demo.email}
+                  onClick={() => handleDemoLogin(demo.email)}
+                  className="flex items-center gap-2 px-3 py-2 rounded-lg border border-border hover:bg-muted transition-colors text-left"
+                >
+                  <demo.icon className="w-3.5 h-3.5 text-primary shrink-0" />
+                  <span className="text-xs font-medium text-foreground">{demo.role}</span>
+                </button>
+              ))}
+            </div>
           </div>
         </motion.div>
       </div>

@@ -1,9 +1,10 @@
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { ROLE_LABELS } from "@/types/dcampus";
 import {
   GraduationCap, LayoutDashboard, BookOpen, Users, CalendarDays,
   ClipboardList, FileText, Building2, MessageSquare, Settings,
-  ChevronRight, X, Upload, BarChart3
+  ChevronRight, X, Upload, BarChart3, Layers
 } from "lucide-react";
 
 type NavItem = {
@@ -16,7 +17,8 @@ type NavItem = {
 const allSidebarItems: NavItem[] = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Building2, label: "Instituciones", path: "/institutions", roles: ["superadmin"] },
-  { icon: BookOpen, label: "Cursos", path: "/courses", roles: ["admin", "teacher", "coordinator"] },
+  { icon: Layers, label: "Pensum", path: "/curriculum", roles: ["admin", "coordinator"] },
+  { icon: BookOpen, label: "Materias / Secciones", path: "/courses", roles: ["admin", "teacher", "coordinator"] },
   { icon: Users, label: "Estudiantes", path: "/students", roles: ["admin", "teacher", "coordinator"] },
   { icon: CalendarDays, label: "Sesiones en Vivo", path: "/live-sessions", roles: ["admin", "teacher", "coordinator", "student"] },
   { icon: ClipboardList, label: "Evaluaciones", path: "/assessments", roles: ["admin", "teacher", "coordinator"] },
@@ -56,12 +58,12 @@ const DashboardSidebar = ({ open, onClose }: { open: boolean; onClose: () => voi
 
         {/* Role badge */}
         <div className="px-5 py-3 border-b border-sidebar-border">
-          <span className="text-xs px-2 py-0.5 rounded-full bg-sidebar-accent text-sidebar-accent-foreground font-medium capitalize">
-            {userRole}
+          <span className="text-xs px-2 py-0.5 rounded-full bg-sidebar-accent text-sidebar-accent-foreground font-medium">
+            {ROLE_LABELS[userRole] || userRole}
           </span>
         </div>
 
-        <nav className="px-3 py-4 space-y-1">
+        <nav className="px-3 py-4 space-y-1 overflow-y-auto" style={{ maxHeight: "calc(100vh - 7rem)" }}>
           {sidebarItems.map((item) => {
             const isActive = location.pathname === item.path || location.pathname.startsWith(item.path + "/");
             return (
